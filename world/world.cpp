@@ -1,6 +1,7 @@
 #include "world.h"
 #include <SDL3/SDL_rect.h>
 #include <algorithm>
+#include "physics.h"
 #include "player.h"
 
 void World::add_platform(float x, float y, float width, float height) {
@@ -21,15 +22,39 @@ Player* World::create_player() {
     return player.get();
 }
 
-void World::update() {
+void World::update(float dt) {
     // currently only updating player because we have no other game objects
-    SDL_FRect future{player->position.x, player->position.y, player->size.x, player->size.y};
-    future.x += player->velocity.x;
-    future.y += player->velocity.y;
+    auto position = player->position;
+    auto velocity = player->velocity;
+    auto acceleration = player->acceleration;
 
-    // check for collisions in the world
-    if (!has_any_collisions(future)) {
-        player->position.x = future.x;
-        player->position.y = future.y;
+    velocity += 0.5f * acceleration * dt;
+    position += velocity * dt;
+    velocity += 0.5f * acceleration * dt;
+    velocity.x *= damping;
+
+    // check for x collisions
+    SDL_FRect future(position.x, player->position.y, player->size.x, player->size.y);
+    if (has_any_collisions(future)) {
+        player->velocity.x = 0;
+        player->acceleration.x = 0;
+    }
+    else {
+        player->velocity.x = velocity.x;
+        player->position.x = position.x;
+        player->acceleration.x = acceleration.x;
+    }
+
+    // y collisions
+    future.x = player->position.x;
+    future.y = position.y;
+    if (has_any_collisions(future)) {
+        player->velocity.y = 0;
+        player->acceleration.y = 0;
+    }
+    else {
+        player-> velocity.y = velocity.y;
+        player->position.y = position.y;
+        player->acceleration.y = gravity;
     }
 }
