@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(class_game)
+project(spelunker)
 
 set(CMAKE_CXX_STANDARD 20)
 add_compile_options(-g -Wall -Wextra -pedantic)
@@ -54,5 +54,5 @@ add_library(game_lib
 
 target_link_libraries(game_lib PUBLIC SDL3::SDL3 utility graphics world game_objects)
 
-add_executable(class_game main.cpp)
-target_link_libraries(class_game PUBLIC game_lib)
+add_executable(spelunker main.cpp)
+target_link_libraries(spelunker PUBLIC game_lib)
