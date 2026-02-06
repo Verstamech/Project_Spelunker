@@ -16,4 +16,9 @@ public:
     Vec<float> size;
     Vec<float> velocity;
     Vec<float> acceleration;
+
+    bool use_physics;
+    float spd;
+    float dir;
+    bool physics_button_hit;
 };

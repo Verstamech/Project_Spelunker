@@ -18,20 +18,29 @@ bool World::has_any_collisions(const SDL_FRect &box) const {
 }
 
 Player* World::create_player() {
-    player = std::make_unique<Player>(Vec<float>{600, 300}, Vec<float>{64, 64});
+    player = std::make_unique<Player>(Vec<float>{600, 550}, Vec<float>{64, 64});
     return player.get();
 }
 
 void World::update(float dt) {
     // currently only updating player because we have no other game objects
+
     auto position = player->position;
     auto velocity = player->velocity;
     auto acceleration = player->acceleration;
 
-    velocity += 0.5f * acceleration * dt;
-    position += velocity * dt;
-    velocity += 0.5f * acceleration * dt;
-    velocity.x *= damping;
+    if (!player->use_physics) {
+        auto spd = player->spd;
+        auto dir = player->dir;
+        velocity.x = spd * dir;
+        velocity.y += 0.5f * acceleration.y * dt;
+        position += velocity * dt;
+    }
+    else {
+        velocity += 0.5f * acceleration * dt;
+        position += velocity * dt;
+        velocity.x *= damping;
+    }
 
     // check for x collisions
     SDL_FRect future(position.x, player->position.y, player->size.x, player->size.y);
