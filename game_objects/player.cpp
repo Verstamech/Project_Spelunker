@@ -2,7 +2,7 @@
 #include "physics.h"
 
 Player::Player(const Vec<float> &position, const Vec<float> &size)
-    : position{position}, size{size}, velocity{0, 0}, use_physics{false}, spd{400}, dir{1}, physics_button_hit{false} {
+    : position{position}, size{size}, velocity{0, 0}, use_physics{false}, spd{4}, dir{1}, physics_button_hit{false} {
     acceleration.y = gravity;
 }
 
@@ -39,12 +39,12 @@ void Player::handle_input() {
         dir = 1;
     }
     if (key_states[SDL_SCANCODE_SPACE] || key_states[SDL_SCANCODE_X]) {
-        velocity.y = -jump_velocity;
+        velocity.y = jump_velocity;
     }
 }
 
 void Player::update() {}
 
-std::pair<SDL_FRect, Color> Player::get_sprite() const {
-    return {{position.x, position.y, size.x, size.y}, {0, 0, 255, 255}};
+std::pair<Vec<float>, Color> Player::get_sprite() const {
+    return {position, {0, 0, 255, 255}};
 }

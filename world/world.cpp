@@ -4,21 +4,26 @@
 #include "physics.h"
 #include "player.h"
 
+World::World(int width, int height)
+    : tilemap{width, height} {}
+
 void World::add_platform(float x, float y, float width, float height) {
-    SDL_FRect rect{x, y, width, height};
-    platforms.push_back(rect);
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            tilemap(x+j, y+i) = Tile::Platform;
+        }
+    }
 }
 
-const std::vector<SDL_FRect> &World::get_platforms() const {
-    return platforms;
-}
+bool World::collides(const Vec<float> &position) const {
+    int x = std::floor(position.x);
+    int y = std::floor(position.y);
 
-bool World::has_any_collisions(const SDL_FRect &box) const {
-    return std::any_of(std::begin(platforms), std::end(platforms), [&](const SDL_FRect& platform){return SDL_HasRectIntersectionFloat(&platform, &box);});
+    return tilemap(x, y) == Tile::Platform;
 }
 
 Player* World::create_player() {
-    player = std::make_unique<Player>(Vec<float>{600, 550}, Vec<float>{64, 64});
+    player = std::make_unique<Player>(Vec<float>{10, 5}, Vec<float>{64, 64});
     return player.get();
 }
 
@@ -39,12 +44,16 @@ void World::update(float dt) {
     else {
         velocity += 0.5f * acceleration * dt;
         position += velocity * dt;
+        velocity += 0.5f * acceleration * dt;
         velocity.x *= damping;
+
+        velocity.x = std::clamp(velocity.x, -terminal_velocity, terminal_velocity);
+        velocity.y = std::clamp(velocity.y, -terminal_velocity, terminal_velocity);
     }
 
     // check for x collisions
-    SDL_FRect future(position.x, player->position.y, player->size.x, player->size.y);
-    if (has_any_collisions(future)) {
+    Vec<float> future{position.x, player->position.y};
+    if (collides(future)) {
         player->velocity.x = 0;
         player->acceleration.x = 0;
     }
@@ -57,9 +66,9 @@ void World::update(float dt) {
     // y collisions
     future.x = player->position.x;
     future.y = position.y;
-    if (has_any_collisions(future)) {
+    if (collides(future)) {
         player->velocity.y = 0;
-        player->acceleration.y = 0;
+        player->acceleration.y = gravity;
     }
     else {
         player-> velocity.y = velocity.y;
