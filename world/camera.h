@@ -1,4 +1,5 @@
 #pragma once
+#include "physics.h"
 #include "tilemap.h"
 #include "vec.h"
 #include "toggle.h"
@@ -23,6 +24,7 @@ private:
     float tilesize;
     Vec<float> location;
     Toggle grid_toggle;
+    Physics cam_physics;
 
     void calculate_visible_tiles();
     Vec<int> visible_min, visible_max;

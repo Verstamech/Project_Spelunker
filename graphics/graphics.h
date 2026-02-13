@@ -11,7 +11,7 @@ class Graphics {
 public:
     Graphics(const std::string& title, int window_width, int window_height);
     void clear();
-    void draw(const SDL_FRect&, const Color& color);
+    void draw(const SDL_FRect&, const Color& color, bool filled=true);
     void update();
 
     const int width, height;

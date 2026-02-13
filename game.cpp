@@ -14,12 +14,13 @@ Game::Game(std::string title, int width, int height)
     world.add_platform(3, 7, 4, 1);
     world.add_platform(13, 4, 6, 1);
 
-    player = world.create_player();
+    player = world.create_player(world);
     camera.set_location(player->position);
 }
 
 void Game::input() {
-    player->handle_input();
+    player->input(world);
+    camera.handle_input();
 }
 
 void Game::update() {

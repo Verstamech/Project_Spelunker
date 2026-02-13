@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(spelunker)
+project(challengers_depths)
 
 set(CMAKE_CXX_STANDARD 20)
 add_compile_options(-g -Wall -Wextra -pedantic)
@@ -46,13 +46,12 @@ FetchContent_MakeAvailable(SDL SDL_mixer)
 add_subdirectory(utility)
 add_subdirectory(graphics)
 add_subdirectory(world)
-add_subdirectory(game_objects)
 
 add_library(game_lib
         game.cpp game.h
 )
 
-target_link_libraries(game_lib PUBLIC SDL3::SDL3 utility graphics world game_objects)
+target_link_libraries(game_lib PUBLIC SDL3::SDL3 utility graphics world)
 
-add_executable(spelunker main.cpp)
-target_link_libraries(spelunker PUBLIC game_lib)
+add_executable(challengers_depths main.cpp)
+target_link_libraries(challengers_depths PUBLIC game_lib)

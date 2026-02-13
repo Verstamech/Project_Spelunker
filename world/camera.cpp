@@ -28,7 +28,11 @@ Vec<float> Camera::world_to_screen(const Vec<float>& world_position) const {
 }
 
 void Camera::handle_input() {
-    // TODO: Check if g was pressed, and if so, call update on the toggle
+    const bool *key_states = SDL_GetKeyboardState(NULL);
+
+    if (key_states[SDL_SCANCODE_G]) {
+        grid_toggle.flip();
+    }
 }
 
 void Camera::update(const Vec<float> &new_location, float dt) {
@@ -38,7 +42,7 @@ void Camera::update(const Vec<float> &new_location, float dt) {
     velocity += 0.5f * acceleration * dt;
     location += velocity * dt;
     velocity += 0.5f * acceleration * dt;
-    velocity *= {damping, damping};
+    velocity *= {cam_physics.damping, cam_physics.damping};
 
     calculate_visible_tiles();
 }
@@ -52,7 +56,7 @@ void Camera::render(const Vec<float> &position, const Color &color, bool filled)
     Vec<float> pixel = world_to_screen(position);
     pixel -= Vec{tilesize / 2, tilesize / 2}; // center on tile
     SDL_FRect rect{pixel.x, pixel.y, tilesize, tilesize};
-    graphics.draw(rect, color);
+    graphics.draw(rect, color, filled);
 }
 
 void Camera::render(const Tilemap& tilemap) const {
@@ -72,6 +76,10 @@ void Camera::render(const Tilemap& tilemap) const {
             }
             else {
                 render(position, {0, 127, 127, 255});
+            }
+
+            if (grid_toggle.on) {
+                render(position, {0, 0, 0, 0}, false);
             }
         }
     }
