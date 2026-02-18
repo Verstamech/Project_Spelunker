@@ -6,10 +6,11 @@
 #include "toggle.h"
 
 class World;
+class FSM;
 
 class GameObject {
 public:
-    GameObject(const Vec<float>& position, const Vec<float>& size, World& world);
+    GameObject(const Vec<float>& position, const Vec<float>& size, World& world, FSM* fsm, Color color);
     ~GameObject();
 
     void input(World& world);
@@ -20,12 +21,14 @@ public:
     // Player data
     Vec<float> position;
     Vec<float> size;
-    Vec<float> velocity, acceleration;
 
     Physics obj_physics;
 
     Toggle use_physics;
     float spd;
     float dir;
+
+    FSM* fsm;
+    Color color;
 };
 

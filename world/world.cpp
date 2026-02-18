@@ -29,8 +29,8 @@ GameObject* World::create_player(World& world) {
 void World::update(float dt) {
     // currently only updating player because we have no other game objects
     auto position = player->position;
-    auto velocity = player->velocity;
-    auto acceleration = player->acceleration;
+    auto velocity = player->obj_physics.velocity;
+    auto acceleration = player->obj_physics.acceleration;
 
     if (!player->use_physics.on) {
         auto spd = player->spd;
@@ -63,7 +63,7 @@ void World::update(float dt) {
 
     // update the player position and velocity
     player->position = future_position;
-    player->velocity = future_velocity;
+    player->obj_physics.velocity = future_velocity;
 }
 
 void World::move_to(Vec<float>& position, const Vec<float>& size, Vec<float>& velocity) {

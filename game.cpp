@@ -31,8 +31,8 @@ void Game::update() {
         world.update(dt);
 
         // put the camera slightly ahead of the player
-        float L = length(player->velocity);
-        Vec displacement = 2.0f * player->velocity / (1.0f + L);
+        float L = length(player->obj_physics.velocity);
+        Vec displacement = 2.0f * player->obj_physics.velocity / (1.0f + L);
         camera.update(player->position + displacement, dt);
         lag -= dt;
     }
