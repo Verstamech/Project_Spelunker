@@ -14,8 +14,8 @@ Game::Game(std::string title, int width, int height)
     world.add_platform(3, 7, 4, 1);
     world.add_platform(13, 4, 6, 1);
 
-    player = world.create_player(world);
-    camera.set_location(player->position);
+    player = world.create_player();
+    camera.set_location(player->obj_physics.position);
 }
 
 void Game::input() {
@@ -28,12 +28,13 @@ void Game::update() {
     lag += (now - prev_counter) / (float) performance_frequency;
     prev_counter = now;
     while (lag >= dt) {
+        player->update(world, dt);
         world.update(dt);
 
         // put the camera slightly ahead of the player
         float L = length(player->obj_physics.velocity);
         Vec displacement = 2.0f * player->obj_physics.velocity / (1.0f + L);
-        camera.update(player->position + displacement, dt);
+        camera.update(player->obj_physics.position + displacement, dt);
         lag -= dt;
     }
 }

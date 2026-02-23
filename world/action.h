@@ -22,3 +22,7 @@ public:
 class Jump : public Action {
     void perform(World&, GameObject& obj) override;
 };
+
+class MoveRight: public Action {
+    void perform(World&, GameObject& obj) override;
+};

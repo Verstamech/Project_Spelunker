@@ -19,10 +19,8 @@ public:
     std::pair<Vec<float>, Color> get_sprite() const;
 
     // Player data
-    Vec<float> position;
-    Vec<float> size;
-
     Physics obj_physics;
+    Vec<float> size;
 
     Toggle use_physics;
     float spd;

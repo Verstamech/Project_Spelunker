@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "physics.h"
 #include "game_object.h"
+#include "states.h"
 
 World::World(int width, int height)
     : tilemap{width, height} {}
@@ -21,14 +22,29 @@ bool World::collides(const Vec<float> &position) const {
     return tilemap(x, y) == Tile::Platform;
 }
 
-GameObject* World::create_player(World& world) {
-    player = std::make_unique<GameObject>(Vec<float>{10, 5}, Vec<float>{1, 1}, world);
+GameObject* World::create_player() {
+    // Create FSM
+    Transitions transitions = {
+        {{StateType::Standing, Transition::Jump}, StateType::Airborne},
+        {{StateType::Airborne, Transition::Stop}, StateType::Standing},
+        {{StateType::Standing, Transition::Move}, StateType::Running},
+        {{StateType::Running, Transition::Stop}, StateType::Standing},
+        {{StateType::Running, Transition::Jump}, StateType::Airborne}
+    };
+    States states = {
+        {StateType::Standing, new Standing()},
+        {StateType::Airborne, new Airborne()},
+        {StateType::Running, new Running()}
+    };
+    FSM* fsm = new FSM{transitions, states, StateType::Standing};
+
+    player = std::make_unique<GameObject>(Vec<float>{10, 5}, Vec<float>{1, 1}, *this, fsm, Color{0, 0, 255, 255});
     return player.get();
 }
 
 void World::update(float dt) {
     // currently only updating player because we have no other game objects
-    auto position = player->position;
+    auto position = player->obj_physics.position;
     auto velocity = player->obj_physics.velocity;
     auto acceleration = player->obj_physics.acceleration;
 
@@ -52,7 +68,7 @@ void World::update(float dt) {
     // ... the code to update velocity and position
 
     // check for collisions in the world - x direction
-    Vec<float> future_position{position.x, player->position.y};
+    Vec<float> future_position{position.x, player->obj_physics.position.y};
     Vec<float> future_velocity{velocity.x, 0};
     move_to(future_position, player->size, future_velocity);
 
@@ -62,7 +78,7 @@ void World::update(float dt) {
     move_to(future_position, player->size, future_velocity);
 
     // update the player position and velocity
-    player->position = future_position;
+    player->obj_physics.position = future_position;
     player->obj_physics.velocity = future_velocity;
 }
 

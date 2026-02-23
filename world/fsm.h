@@ -10,11 +10,12 @@ class State;
 enum class StateType {
     Standing,
     Airborne,
-    Healing
+    Running
 };
 enum class Transition {
     Jump,
-    Stop
+    Stop,
+    Move
 };
 
 using Transitions = std::map<std::pair<StateType, Transition>, StateType>;
