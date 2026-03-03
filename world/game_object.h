@@ -3,30 +3,29 @@
 #include "vec.h"
 #include "graphics.h"
 #include "physics.h"
-#include "toggle.h"
 
 class World;
 class FSM;
+class Input;
 
 class GameObject {
 public:
-    GameObject(const Vec<float>& position, const Vec<float>& size, World& world, FSM* fsm, Color color);
+    GameObject(const Vec<float>& position, const Vec<float>& size, World& world, FSM* fsm, Input* input, Color color);
     ~GameObject();
 
-    void input(World& world);
     void update(World& world, double dt);
 
     std::pair<Vec<float>, Color> get_sprite() const;
 
-    // Player data
+    // GameObject Data
     Physics obj_physics;
     Vec<float> size;
+    FSM* fsm;
+    Input* input;
+    Color color;
+    Sprite sprite;
 
-    Toggle use_physics;
     float spd;
     float dir;
-
-    FSM* fsm;
-    Color color;
+    double jump_length = 0;
 };
-

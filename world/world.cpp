@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "physics.h"
 #include "game_object.h"
+#include "fsm.h"
 #include "states.h"
 
 World::World(int width, int height)
@@ -25,11 +26,18 @@ bool World::collides(const Vec<float> &position) const {
 GameObject* World::create_player() {
     // Create FSM
     Transitions transitions = {
+            // Standing transitions
         {{StateType::Standing, Transition::Jump}, StateType::Airborne},
-        {{StateType::Airborne, Transition::Stop}, StateType::Standing},
         {{StateType::Standing, Transition::Move}, StateType::Running},
+
+            // Airborne transitions
+        {{StateType::Airborne, Transition::Stop}, StateType::Standing},
+        {{StateType::Airborne, Transition::Move}, StateType::Running},
+
+            // Running Transitions
         {{StateType::Running, Transition::Stop}, StateType::Standing},
-        {{StateType::Running, Transition::Jump}, StateType::Airborne}
+        {{StateType::Running, Transition::Jump}, StateType::Airborne},
+        {{StateType::Running, Transition::Stop_Midair}, StateType::Airborne}
     };
     States states = {
         {StateType::Standing, new Standing()},
@@ -38,7 +46,10 @@ GameObject* World::create_player() {
     };
     FSM* fsm = new FSM{transitions, states, StateType::Standing};
 
-    player = std::make_unique<GameObject>(Vec<float>{10, 5}, Vec<float>{1, 1}, *this, fsm, Color{0, 0, 255, 255});
+    // Player input
+    KeyboardInput* input = new KeyboardInput();
+
+    player = std::make_unique<GameObject>(Vec<float>{10, 5}, Vec<float>{1, 1}, *this, fsm, input, Color{0, 0, 255, 255});
     return player.get();
 }
 
@@ -48,19 +59,11 @@ void World::update(float dt) {
     auto velocity = player->obj_physics.velocity;
     auto acceleration = player->obj_physics.acceleration;
 
-    if (!player->use_physics.on) {
-        auto spd = player->spd;
-        auto dir = player->dir;
-        velocity.x = spd * dir;
-        velocity.y += 0.5f * acceleration.y * dt;
-        position += velocity * dt;
-    }
-    else {
-        velocity += 0.5f * acceleration * dt;
-        position += velocity * dt;
-        velocity += 0.5f * acceleration * dt;
-        velocity.x *= world_physics.damping;
-    }
+    auto spd = player->spd;
+    auto dir = player->dir;
+    velocity.x = spd * dir;
+    velocity.y += 0.5f * acceleration.y * dt;
+    position += velocity * dt;
 
     velocity.x = std::clamp(velocity.x, -world_physics.terminal_velocity, world_physics.terminal_velocity);
     velocity.y = std::clamp(velocity.y, -world_physics.terminal_velocity, world_physics.terminal_velocity);

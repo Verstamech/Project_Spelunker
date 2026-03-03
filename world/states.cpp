@@ -11,20 +11,26 @@ bool on_platform(World& world ,GameObject& obj) {
 }
 
 // Standing
-void Standing::on_enter(World &, GameObject& obj) {
+void Standing::on_enter(World &world, GameObject& obj) {
     obj.color = {0, 0, 255, 255};
-    obj.obj_physics.acceleration.x = 0;
+    obj.dir = 0;
 }
 
 Action *Standing::input(World& world, GameObject& obj, ActionType action_type) {
-    if (action_type == ActionType::Jump) {
+    if (action_type == ActionType::Jump && on_platform(world, obj)) {
         obj.fsm->transition(Transition::Jump, world, obj);
         return new Jump();
     }
-    else if (action_type == ActionType::MoveRight) {
+
+    if (action_type == ActionType::MoveRight) {
         obj.fsm->transition(Transition::Move, world, obj);
         return new MoveRight();
     }
+    if (action_type == ActionType::MoveLeft) {
+        obj.fsm->transition(Transition::Move, world, obj);
+        return new MoveLeft();
+    }
+
     return nullptr;
 }
 
@@ -41,18 +47,56 @@ void Airborne::update(World& world, GameObject& obj, double dt) {
     }
 }
 
+Action *Airborne::input(World &world, GameObject & obj, ActionType action_type) {
+    if (action_type == ActionType::MoveRight) {
+        obj.fsm->transition(Transition::Move, world, obj);
+        return new MoveRight();
+    }
+
+    if (action_type == ActionType::MoveLeft) {
+        obj.fsm->transition(Transition::Move, world, obj);
+        return new MoveLeft();
+    }
+    obj.dir = 0;
+
+    return nullptr;
+}
+
 // Running
 void Running::on_enter(World &, GameObject & obj) {
     obj.color = {0, 255, 0, 255};
 }
 
-Action *Running::input(World& world, GameObject& obj, ActionType action_type) {
-    if (action_type == ActionType::None) {
-        obj.fsm->transition(Transition::Stop, world, obj);
+void Running::update(World& world, GameObject& obj, double dt) {
+    if (!on_platform(world, obj)) {
+        obj.jump_length += dt;
     }
-    else if (action_type == ActionType::Jump) {
+}
+
+Action *Running::input(World& world, GameObject& obj, ActionType action_type) {
+    if (action_type == ActionType::Jump && on_platform(world, obj)) {
         obj.fsm->transition(Transition::Jump, world, obj);
         return new Jump();
     }
+
+    if (action_type == ActionType::MoveRight) {
+        obj.fsm->transition(Transition::Move, world, obj);
+        return new MoveRight();
+    }
+
+    if (action_type == ActionType::MoveLeft) {
+        obj.fsm->transition(Transition::Move, world, obj);
+        return new MoveLeft();
+    }
+
+    if (action_type == ActionType::None) {
+        if (on_platform(world, obj)) {
+            obj.fsm->transition(Transition::Stop, world, obj);
+        }
+        else {
+            obj.fsm->transition(Transition::Stop_Midair, world, obj);
+        }
+    }
+
     return nullptr;
 }

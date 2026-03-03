@@ -7,11 +7,11 @@ void KeyboardInput::get_input() {
 
     const bool *key_states = SDL_GetKeyboardState(NULL);
 
-    if (key_states[SDL_SCANCODE_RIGHT] || key_states[SDL_SCANCODE_D]) {
-        next_action_type = ActionType::MoveRight;
-    }
     if (key_states[SDL_SCANCODE_LEFT] || key_states[SDL_SCANCODE_A]) {
         next_action_type = ActionType::MoveLeft;
+    }
+    else if (key_states[SDL_SCANCODE_RIGHT] || key_states[SDL_SCANCODE_D]) {
+        next_action_type = ActionType::MoveRight;
     }
 }
 

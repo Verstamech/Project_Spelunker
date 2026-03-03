@@ -7,5 +7,8 @@ void Jump::perform(World&, GameObject& obj) {
 }
 
 void MoveRight::perform(World&, GameObject& obj) {
-    obj.obj_physics.acceleration.x = obj.obj_physics.walk_acceleration;
+    obj.dir = 1;
+}
+void MoveLeft::perform(World&, GameObject& obj) {
+    obj.dir = -1;
 }

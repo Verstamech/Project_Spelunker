@@ -4,6 +4,7 @@
 #include "physics.h"
 #include "tilemap.h"
 #include "vec.h"
+#include "keyboard_input.h"
 
 class GameObject;
 

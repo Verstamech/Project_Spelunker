@@ -15,6 +15,7 @@ enum class StateType {
 enum class Transition {
     Jump,
     Stop,
+    Stop_Midair,
     Move
 };
 
