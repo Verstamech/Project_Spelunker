@@ -65,8 +65,8 @@ void World::update(float dt) {
     velocity.y += 0.5f * acceleration.y * dt;
     position += velocity * dt;
 
-    velocity.x = std::clamp(velocity.x, -world_physics.terminal_velocity, world_physics.terminal_velocity);
-    velocity.y = std::clamp(velocity.y, -world_physics.terminal_velocity, world_physics.terminal_velocity);
+    velocity.x = std::clamp(velocity.x, -player->obj_physics.terminal_velocity, player->obj_physics.terminal_velocity);
+    velocity.y = std::clamp(velocity.y, -player->obj_physics.terminal_velocity, player->obj_physics.terminal_velocity);
 
     // ... the code to update velocity and position
 
